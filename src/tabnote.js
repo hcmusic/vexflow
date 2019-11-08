@@ -113,8 +113,9 @@ export class TabNote extends StemmableNote {
 
   // Initialize the TabNote with a `tab_struct` full of properties
   // and whether to `draw_stem` when rendering the note
-  constructor(tab_struct, draw_stem) {
+  constructor(tab_struct, draw_stem, extendWidth) {
     super(tab_struct);
+    this.extendWidth = extendWidth || 0;
     this.setAttribute('type', 'TabNote');
 
     this.ghost = false; // Renders parenthesis around notes
@@ -241,6 +242,9 @@ export class TabNote extends StemmableNote {
           ctx.save();
           ctx.setRawFont(this.render_options.font);
           glyph.width = ctx.measureText(text).width;
+          if(text.trim().length == 0){
+            glyph.width = ctx.measureText("9").width;
+          }
           ctx.restore();
           glyph.getWidth = () => glyph.width;
         }
@@ -439,7 +443,7 @@ export class TabNote extends StemmableNote {
       const tab_x = x + (note_glyph_width / 2) - (glyph.getWidth() / 2);
 
       // FIXME: Magic numbers.
-      ctx.clearRect(tab_x - 2, y - 3, glyph.getWidth() + 4, 6);
+      ctx.clearRect(tab_x - 2, y - 3, glyph.getWidth() + this.extendWidth, 10);
 
       if (glyph.code) {
         Glyph.renderGlyph(ctx, tab_x, y,

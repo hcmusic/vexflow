@@ -42,11 +42,11 @@ var notes = [
     duration: "h"}).
   addModifier(new VF.Vibrato().setHarsh(true).setVibratoWidth(70), 0)
 ];
-let fl = context.useLayer("fuck");
+context.createLayer("/aaa/bbb/");
+context.createLayer("/aaa/ccc");
+context.useLayer("aaa/bbb/");
 VF.Formatter.FormatAndDraw(context, stave, notes);
-context.useLayer("top");
-context.createLayer("lll");
-context.useLayer("shit");
+context.useLayer("aaa/ccc");
 VF.Formatter.FormatAndDraw(context, stave, notes);
 console.log(context.svgNote);
   </script>

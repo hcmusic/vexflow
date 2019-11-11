@@ -21,28 +21,33 @@ renderer.resize(500, 500);
 var context = renderer.getContext();
 context.setFont("Arial", 10, 12).setBackgroundFillStyle("rgba(255,0,0,0.5)");
 var stave = new VF.TabStave(10, 40, 400);
-stave.addClef("tab").setContext(context).draw();
+//stave.addClef("tab").setContext(context).draw();
 
 var notes = [
   // A single note
   new VF.TabNote({
-    positions: [{str: 3, fret: 7}],
-    duration: "q"}),
+    positions: [{str: 3, fret: 77777, section: 0, note: 0}],
+    duration: "q"},true),
 
   // A chord with the note on the 3rd string bent
   new VF.TabNote({
-    positions: [{str: 2, fret: 8},
-                {str: 3, fret: 99}],
+    positions: [{str: 2, fret: 8999, section: 1, note: 0},
+                {str: 3, fret: 99, section: 1, note: 1}],
     duration: "q"},true,60).
   addModifier(new VF.Bend("Full"), 1),
 
   // A single note with a harsh vibrato
   new VF.TabNote({
-    positions: [{str: 2, fret: 5}],
+    positions: [{str: 2, fret: 5, section: 2, note: 0}],
     duration: "h"}).
   addModifier(new VF.Vibrato().setHarsh(true).setVibratoWidth(70), 0)
 ];
-
+let fl = context.useLayer("fuck");
 VF.Formatter.FormatAndDraw(context, stave, notes);
+context.useLayer("top");
+context.createLayer("lll");
+context.useLayer("shit");
+VF.Formatter.FormatAndDraw(context, stave, notes);
+console.log(context.svgNote);
   </script>
 </html>

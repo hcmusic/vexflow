@@ -45,11 +45,11 @@ export class SVGContext {
     this.svg = svg;
     this.groups = [this.svg]; // Create the group stack
     this.parent = this.svg;
-    let topLayer = {svgElement: this.svg, depth: 0};
+    const topLayer = { svgElement: this.svg, depth: 0 };
     topLayer.parent = topLayer;
     topLayer.top = topLayer;
     this.layers = topLayer;
-    
+
     this.path = '';
     this.pen = { x: NaN, y: NaN };
     this.lineWidth = 1.0;
@@ -98,36 +98,37 @@ export class SVGContext {
   }
 
   createLayer(name) {
-    if(this.groups.length !== this.layers.depth + 1){
-      console.error("should close all group before create layer");
+    if (this.groups.length !== this.layers.depth + 1) {
+      console.error('should close all group before create layer');
       return;
     }
-    if(this.layers[name]){
-      console.error("layer name already exist");
+    if (this.layers[name]) {
+      console.error('layer name already exist');
       return;
     }
     const newLayer = this.create('g');
-    newLayer.setAttribute("data-layer-name", name);
+    newLayer.setAttribute('data-layer-name', name);
     this.parent.appendChild(newLayer);
-    this.layers[name] = {parent: this.layers, svgElement: newLayer, top: this.layers.top, depth: this.layers.depth+1};
+    this.layers[name] = { parent: this.layers, svgElement: newLayer,
+      top: this.layers.top, depth: this.layers.depth + 1 };
     return newLayer;
   }
 
   useLayer(name) {
-    if(this.groups.length !== this.layers.depth + 1){
-      console.error("should close all group before use layer");
+    if (this.groups.length !== this.layers.depth + 1) {
+      console.error('should close all group before use layer');
       return;
     }
-    if(!this.layers[name]){
+    if (!this.layers[name]) {
       this.createLayer(name);
     }
     this.parent = this.layers[name].svgElement;
     this.layers = this.layers[name];
-    if(name === "parent"){
+    if (name === 'parent') {
       this.groups.pop();
-    }else if(name === "top"){
+    } else if (name === 'top') {
       this.groups = [this.layers.svgElement];
-    }else{
+    } else {
       this.groups.push(this.layers.svgElement);
     }
     return this.layers.svgElement;
@@ -149,7 +150,7 @@ export class SVGContext {
   }
 
   closeGroup() {
-    if(this.groups.length === this.layers.depth + 1)return;
+    if (this.groups.length === this.layers.depth + 1) return;
     this.groups.pop();
     this.parent = this.groups[this.groups.length - 1];
   }
@@ -383,8 +384,8 @@ export class SVGContext {
 
     // Create the rect & style it:
     const rectangle = this.create('rect');
-    if(section >= 0){
-      if(!this.svgNote[section])this.svgNote[section] = [];
+    if (section >= 0) {
+      if (!this.svgNote[section]) this.svgNote[section] = [];
       this.svgNote[section][note] = rectangle;
     }
     if (typeof attributes === 'undefined') {
@@ -394,7 +395,7 @@ export class SVGContext {
         stroke: 'black',
       };
     }
-    attributes["data-tw"] = textWidth;
+    attributes['data-text-width'] = textWidth;
 
     Vex.Merge(attributes, {
       x,

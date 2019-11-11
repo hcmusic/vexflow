@@ -443,7 +443,7 @@ export class TabNote extends StemmableNote {
       const tab_x = x + (note_glyph_width / 2) - (glyph.getWidth() / 2);
 
       // FIXME: Magic numbers.
-      ctx.clearRect(tab_x - 2, y - 3, glyph.getWidth() + this.extendWidth, 10);
+      ctx.clearRect(tab_x - 2, y - 3, glyph.getWidth() + this.extendWidth, 10, this.positions[i].section, this.positions[i].note, glyph.getWidth());
 
       if (glyph.code) {
         Glyph.renderGlyph(ctx, tab_x, y,

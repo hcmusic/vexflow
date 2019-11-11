@@ -39,6 +39,7 @@ export class SVGContext {
     const svg = this.create('svg');
     // Add it to the canvas:
     this.element.appendChild(svg);
+    this.svgNote = [];
 
     // Point to it:
     this.svg = svg;
@@ -331,7 +332,7 @@ export class SVGContext {
 
   // ## Rectangles:
 
-  rect(x, y, width, height, attributes) {
+  rect(x, y, width, height, attributes, section = -1, note = -1, textWidth = 0) {
     // Avoid invalid negative height attribs by
     // flipping the rectangle on its head:
     if (height < 0) {
@@ -341,6 +342,10 @@ export class SVGContext {
 
     // Create the rect & style it:
     const rectangle = this.create('rect');
+    if(section >= 0){
+      if(!this.svgNote[section])this.svgNote[section] = [];
+      this.svgNote[section][note] = rectangle;
+    }
     if (typeof attributes === 'undefined') {
       attributes = {
         fill: 'none',
@@ -348,6 +353,7 @@ export class SVGContext {
         stroke: 'black',
       };
     }
+    attributes["data-tw"] = textWidth;
 
     Vex.Merge(attributes, {
       x,
@@ -372,7 +378,7 @@ export class SVGContext {
     return this;
   }
 
-  clearRect(x, y, width, height) {
+  clearRect(x, y, width, height, section = -1, note = -1, textWidth = 0) {
     // TODO(GCR): Improve implementation of this...
     // Currently it draws a box of the background color, rather
     // than creating alpha through lower z-levels.
@@ -388,7 +394,7 @@ export class SVGContext {
     // draw lines around locations of tablature fingering.
     //
 
-    this.rect(x, y, width, height, this.background_attributes);
+    this.rect(x, y, width, height, this.background_attributes, section, note, textWidth);
     return this;
   }
 

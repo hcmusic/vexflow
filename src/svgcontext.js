@@ -45,10 +45,9 @@ export class SVGContext {
     this.svg = svg;
     this.groups = [this.svg]; // Create the group stack
     this.parent = this.svg;
-    const topLayer = { svgElement: this.svg, depth: 0 };
-    topLayer.parent = topLayer;
-    topLayer.top = topLayer;
-    this.layers = topLayer;
+    this.topLayer = { svgElement: this.svg, content: {} };
+    this.layer = this.topLayer;
+    this.layerPath = '/';
 
     this.path = '';
     this.pen = { x: NaN, y: NaN };
@@ -98,40 +97,52 @@ export class SVGContext {
   }
 
   createLayer(name) {
-    if (this.groups.length !== this.layers.depth + 1) {
-      console.error('should close all group before create layer');
-      return;
+    const layers = name.split('/');
+    if (!layers[0]) layers.shift();
+    let currentLayer = this.topLayer;
+    for (const lname of layers) {
+      if (!lname) break;
+      if (currentLayer.content[lname]) {
+        console.log(lname, currentLayer);
+        this.parent = currentLayer.content[lname].svgElement;
+        currentLayer = currentLayer.content[lname];
+        continue;
+      }
+      const newLayer = this.create('g');
+      newLayer.setAttribute('data-layer-name', lname);
+      this.parent.appendChild(newLayer);
+      currentLayer.content[lname] = { svgElement: newLayer, content: {} };
+      this.parent = newLayer;
+      currentLayer = currentLayer.content[lname];
     }
-    if (this.layers[name]) {
-      console.error('layer name already exist');
-      return;
-    }
-    const newLayer = this.create('g');
-    newLayer.setAttribute('data-layer-name', name);
-    this.parent.appendChild(newLayer);
-    this.layers[name] = { parent: this.layers, svgElement: newLayer,
-      top: this.layers.top, depth: this.layers.depth + 1 };
-    return newLayer;
+    this.parent = this.svg;
+    return currentLayer.svgElement;
   }
 
   useLayer(name) {
-    if (this.groups.length !== this.layers.depth + 1) {
-      console.error('should close all group before use layer');
+    if (this.groups.length !== 1) {
+      const stack = new Error().stack;
+      console.error('should close all group before use layer', stack);
       return;
     }
-    if (!this.layers[name]) {
-      this.createLayer(name);
+
+    const layers = name.split('/');
+    if (!layers[0])layers.shift();
+    let currentLayer = this.topLayer;
+    for (const lname of layers) {
+      if (!lname) break;
+      if (!currentLayer.content[lname]) {
+        const stack = new Error().stack;
+        console.error('path not exist', stack);
+        return;
+      }
+      currentLayer = currentLayer.content[lname];
     }
-    this.parent = this.layers[name].svgElement;
-    this.layers = this.layers[name];
-    if (name === 'parent') {
-      this.groups.pop();
-    } else if (name === 'top') {
-      this.groups = [this.layers.svgElement];
-    } else {
-      this.groups.push(this.layers.svgElement);
-    }
-    return this.layers.svgElement;
+    this.layerPath = name;
+    this.parent = currentLayer.svgElement;
+    this.layer = currentLayer;
+    this.groups = [currentLayer.svgElement];
+    return currentLayer.svgElement;
   }
 
   // Allow grouping elements in containers for interactivity.
@@ -150,7 +161,7 @@ export class SVGContext {
   }
 
   closeGroup() {
-    if (this.groups.length === this.layers.depth + 1) return;
+    if (this.groups.length === 1) return;
     this.groups.pop();
     this.parent = this.groups[this.groups.length - 1];
   }

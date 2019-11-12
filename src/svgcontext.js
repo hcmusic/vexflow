@@ -45,7 +45,7 @@ export class SVGContext {
     this.svg = svg;
     this.groups = [this.svg]; // Create the group stack
     this.parent = this.svg;
-    this.topLayer = { svgElement: this.svg, content: {} };
+    this.topLayer = { svgContext: this, content: {} };
     this.layer = this.topLayer;
     this.layerPath = '/';
 
@@ -103,20 +103,19 @@ export class SVGContext {
     for (const lname of layers) {
       if (!lname) break;
       if (currentLayer.content[lname]) {
-        console.log(lname, currentLayer);
-        this.parent = currentLayer.content[lname].svgElement;
+        this.parent = currentLayer.content[lname].svgContext.svg;
         currentLayer = currentLayer.content[lname];
         continue;
       }
-      const newLayer = this.create('g');
+      const newSvgContext = new SVGContext(this.parent);
+      const newLayer = newSvgContext.svg;
       newLayer.setAttribute('data-layer-name', lname);
-      this.parent.appendChild(newLayer);
-      currentLayer.content[lname] = { svgElement: newLayer, content: {} };
+      currentLayer.content[lname] = { svgContext: newSvgContext, content: {} };
       this.parent = newLayer;
       currentLayer = currentLayer.content[lname];
     }
     this.parent = this.svg;
-    return currentLayer.svgElement;
+    return currentLayer.svgContext;
   }
 
   useLayer(name) {
@@ -125,7 +124,7 @@ export class SVGContext {
       console.error('should close all group before use layer', stack);
       return;
     }
-
+    this.createLayer(name);
     const layers = name.split('/');
     if (!layers[0])layers.shift();
     let currentLayer = this.topLayer;
@@ -139,10 +138,10 @@ export class SVGContext {
       currentLayer = currentLayer.content[lname];
     }
     this.layerPath = name;
-    this.parent = currentLayer.svgElement;
+    this.parent = currentLayer.svgContext.svg;
     this.layer = currentLayer;
-    this.groups = [currentLayer.svgElement];
-    return currentLayer.svgElement;
+    this.groups = [currentLayer.svgContext.svg];
+    return currentLayer.svgContext;
   }
 
   // Allow grouping elements in containers for interactivity.

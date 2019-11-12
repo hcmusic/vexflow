@@ -451,6 +451,25 @@ export class SVGContext {
     return this;
   }
 
+  // ## Ellipses:
+
+  ellipse(cx, cy, rx, ry, attributes = null) {
+    // Create the ellipse & style it:
+    const ellipse = this.create('ellipse');
+    if (!attributes) {
+      attributes = {
+        fill: 'none',
+        'stroke-width': this.lineWidth,
+        stroke: 'black',
+      };
+    }
+
+    Vex.Merge(attributes, { cx, cy, rx, ry });
+    this.applyAttributes(ellipse, attributes);
+    this.add(ellipse);
+    return this;
+  }
+
   // ## Paths:
 
   beginPath() {

@@ -328,8 +328,9 @@ export class SVGContext {
     this.state.scale = { x, y };
     const visibleWidth = this.width / x;
     const visibleHeight = this.height / y;
-    this.setViewBox(0, 0, visibleWidth || 0, visibleHeight || 0);
-
+    if (visibleHeight && visibleWidth) {
+      this.setViewBox(0, 0, visibleWidth, visibleHeight);
+    }
     return this;
   }
 

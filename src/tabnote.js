@@ -435,9 +435,9 @@ export class TabNote extends StemmableNote {
     const x = this.getAbsoluteX();
     const ys = this.ys;
     if (this.noteType === 'r') {
-      const index = Math.floor(this.positions.length / 2);
+      const index = Math.floor((this.positions.length - 1) / 2);
       const y = ys[index] + this.render_options.y_shift + 5;
-      Glyph.renderGlyph(ctx, x + 13, y - 3,
+      Glyph.renderGlyph(ctx, this.getStemX() - 6, y - 5,
         this.render_options.glyph_font_scale, this.glyph.code_head);
     }
     for (let i = 0; i < this.positions.length; ++i) {
@@ -449,7 +449,7 @@ export class TabNote extends StemmableNote {
       const tab_x = x + (note_glyph_width / 2) - (glyph.getWidth() / 2);
 
       // FIXME: Magic numbers.
-      ctx.clearRect(tab_x - 2, y - 3, glyph.getWidth() + this.extendWidth, 10,
+      ctx.clearRect(tab_x - 2, y - 5, glyph.getWidth() + this.extendWidth, 10,
         this.positions[i].section, this.positions[i].note, glyph.getWidth());
 
       if (glyph.code) {

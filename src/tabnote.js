@@ -434,6 +434,12 @@ export class TabNote extends StemmableNote {
     const ctx = this.context;
     const x = this.getAbsoluteX();
     const ys = this.ys;
+    if (this.noteType === 'r') {
+      const index = Math.floor(this.positions.length / 2);
+      const y = ys[index] + this.render_options.y_shift + 5;
+      Glyph.renderGlyph(ctx, x + 13, y - 3,
+        this.render_options.glyph_font_scale, this.glyph.code_head);
+    }
     for (let i = 0; i < this.positions.length; ++i) {
       const y = ys[i] + this.render_options.y_shift;
       const glyph = this.glyphs[i];
@@ -484,7 +490,10 @@ export class TabNote extends StemmableNote {
 
     if (render_stem) {
       this.context.openGroup('stem', null, { pointerBBox: true });
-      this.stem.setContext(this.context).draw();
+      let factor = 1;
+      if (this.duration === 'w' || Number(this.duration) === 1) factor = 0;
+      if (this.duration === 'h' || Number(this.duration) === 2) factor = 0.5;
+      this.stem.setContext(this.context).draw(factor);
       this.context.closeGroup();
     }
 

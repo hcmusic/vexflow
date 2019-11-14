@@ -121,7 +121,7 @@ export class Stem extends Element {
   }
 
   // Render the stem onto the canvas
-  draw() {
+  draw(factor = 1) {
     this.setRendered();
     if (this.hide) return;
     const ctx = this.checkContext();
@@ -155,7 +155,8 @@ export class Stem extends Element {
     ctx.beginPath();
     ctx.setLineWidth(Stem.WIDTH);
     ctx.moveTo(stem_x, stem_y - stemletYOffset);
-    ctx.lineTo(stem_x, stem_y - stemHeight - (this.renderHeightAdjustment * stem_direction));
+    ctx.lineTo(stem_x,
+      stem_y - stemHeight * factor - (this.renderHeightAdjustment * stem_direction));
     ctx.stroke();
     this.restoreStyle(ctx);
     ctx.restore();

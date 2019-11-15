@@ -691,7 +691,7 @@ export class SVGContext {
     return box;
   }
 
-  fillText(text, x, y) {
+  fillText(text, x, y, customAttributes = {}) {
     if (!text || text.length <= 0) {
       return;
     }
@@ -701,6 +701,7 @@ export class SVGContext {
     attributes.x = x;
     attributes.y = y;
 
+    Vex.Merge(attributes, customAttributes);
     const txt = this.create('text');
     txt.textContent = text;
     this.applyAttributes(txt, attributes);

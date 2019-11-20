@@ -305,7 +305,7 @@ export class StaveNote extends StemmableNote {
     this.clef = noteStruct.clef;
     this.octave_shift = noteStruct.octave_shift;
     this.beam = null;
-
+    this.drawnNoteHead = [];
     // Pull note rendering properties
     this.glyph = Flow.durationToGlyph(this.duration, this.noteType);
 
@@ -1087,10 +1087,14 @@ export class StaveNote extends StemmableNote {
 
   // Draw the NoteHeads
   drawNoteHeads() {
-    this.note_heads.forEach(notehead => {
-      this.context.openGroup('notehead', null, { pointerBBox: true });
-      notehead.setContext(this.context).draw();
+    this.note_heads.forEach((notehead, i) => {
+      const drawnNoteHead = this.context.openGroup('notehead', null, { pointerBBox: true });
+      const [noteHeadX, noteHeadY] = notehead.setContext(this.context).draw();
       this.context.closeGroup();
+      drawnNoteHead.setAttribute('data-x', String(noteHeadX));
+      drawnNoteHead.setAttribute('data-y', String(noteHeadY));
+      drawnNoteHead.setAttribute('data-key', this.keys[i]);
+      this.drawnNoteHead.push(drawnNoteHead);
     });
   }
 

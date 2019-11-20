@@ -212,5 +212,6 @@ export class NoteHead extends Note {
     if (this.style) {
       this.restoreStyle(ctx);
     }
+    return [head_x + 5, y];
   }
 }

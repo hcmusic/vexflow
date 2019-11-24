@@ -421,13 +421,15 @@ export class SVGContext {
     return this;
   }
 
-  fillRect(x, y, width, height) {
+  fillRect(x, y, width, height, attribute = {}) {
     if (height < 0) {
       y += height;
       height *= -1;
     }
-
-    this.rect(x, y, width, height, this.attributes);
+    const rectAttr = {};
+    Vex.Merge(rectAttr, this.attributes);
+    Vex.Merge(rectAttr, attribute);
+    this.rect(x, y, width, height, rectAttr);
     return this;
   }
 

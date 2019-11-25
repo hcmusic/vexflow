@@ -103,9 +103,12 @@ export class SVGContext {
     for (const lname of layers) {
       if (!lname) break;
       if (currentLayer.content[lname]) {
-        this.parent = currentLayer.content[lname].svgContext.svg;
-        currentLayer = currentLayer.content[lname];
-        continue;
+        const selectedSvg = currentLayer.content[lname].svgContext.svg;
+        if (selectedSvg.parentElement === currentLayer.svgContext.svg) {
+          this.parent = selectedSvg;
+          currentLayer = currentLayer.content[lname];
+          continue;
+        }
       }
       const newSvgContext = new SVGContext(this.parent);
       const newLayer = newSvgContext.svg;
@@ -124,6 +127,7 @@ export class SVGContext {
       console.error('should close all group before use layer', stack);
       return;
     }
+    this.parent = this.svg;
     this.createLayer(name);
     const layers = name.split('/');
     if (!layers[0])layers.shift();
